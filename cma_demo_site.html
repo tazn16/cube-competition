@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMA Inspection Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      padding: 40px;
+    }
+    h1 {
+      color: #333;
+    }
+    #timer {
+      font-size: 60px;
+      margin: 30px 0;
+      color: #00aa00;
+    }
+    button {
+      padding: 12px 28px;
+      font-size: 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>CMA Inspection Countdown Demo</h1>
+  <p>Click the button below to simulate the 15-second inspection timer with male voice prompts.</p>
+  <div id="timer">15</div>
+  <button id="startBtn">Start Inspection</button>
+
+  <script>
+    const timerEl = document.getElementById("timer");
+    const startBtn = document.getElementById("startBtn");
+    let countdown;
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      const maleVoice = speechSynthesis.getVoices().find(v =>
+        v.name.toLowerCase().includes("male") ||
+        v.name.toLowerCase().includes("john") ||
+        v.name.toLowerCase().includes("david")
+      );
+      if (maleVoice) utterance.voice = maleVoice;
+      speechSynthesis.speak(utterance);
+    }
+
+    function startInspectionCountdown() {
+      let timeLeft = 15;
+      timerEl.textContent = timeLeft;
+      speak("15 seconds");
+
+      countdown = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+
+        if (timeLeft === 8) speak("8 seconds");
+        if (timeLeft === 2) speak("2 seconds");
+
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          timerEl.textContent = "Start!";
+          speak("Start");
+        }
+      }, 1000);
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+      startInspectionCountdown();
+    });
+
+    // Preload voices
+    speechSynthesis.onvoiceschanged = () => {};
+  </script>
+</body>
+</html>
